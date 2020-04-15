@@ -1,6 +1,6 @@
 const Koa = require('koa')
+const fs = require('fs')
 const app = new Koa()
-
 // logger
 app.use(async (ctx, next) => {
   await next();
@@ -18,7 +18,8 @@ app.use(async (ctx, next) => {
 
 // response
 app.use(async ctx => {
-  ctx.body = 'Hello World'
+  ctx.response.type = 'html'
+  ctx.response.body = fs.createReadStream('./client/index.html')
 })
 
 app.listen(3000)
