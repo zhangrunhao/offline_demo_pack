@@ -1,25 +1,17 @@
 const Koa = require('koa')
 const fs = require('fs')
+const path = require('path')
 const app = new Koa()
-// logger
-app.use(async (ctx, next) => {
-  await next();
-  const rt = ctx.response.get('X-Response-Time')
-  console.log(`${ctx.method} ${ctx.url} - ${rt}`)
-})
-
-// x-response-time
-app.use(async (ctx, next) => {
-  const start = Date.now()
-  await next()
-  const ms = Date.now() - start
-  ctx.set('X-Response-Time', `${ms}ms`)
-})
 
 // response
 app.use(async ctx => {
-  ctx.response.type = 'html'
-  ctx.response.body = fs.createReadStream('./client/index.html')
+  if (ctx.url.indexOf('/client') === 0) {
+    ctx.response.type = path.extname(ctx.url)
+    ctx.response.body = fs.createReadStream(`.${ctx.url}`)
+  } else if (ctx.url.indexOf('/api') === 0) {
+  } else {
+    // 404
+  }
 })
-
+console.log("===========")
 app.listen(3000)
